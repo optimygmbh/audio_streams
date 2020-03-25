@@ -130,9 +130,18 @@ class AudioController extends ValueNotifier<AudioValue> {
       throw AudioControllerException(e.code, e.message);
     }
     const EventChannel audioChannel = EventChannel('audio');
-    _audioStreamSubscription = audioChannel
-        .receiveBroadcastStream()
-        .map((dynamic convert) => List<int>.from(convert));
+    _audioStreamSubscription = audioChannel.receiveBroadcastStream().map(
+      (dynamic convert) {
+        final convertToUint8 = convert.map(
+          (e) {
+            final newNumber = e.toUnsigned(8);
+            // print("old: $e, new: $newNumber");
+            return newNumber;
+          }
+        );
+        return List<int>.from(convertToUint8);
+      },
+    );
     return _audioStreamSubscription;
   }
   //add a completer
